@@ -22,12 +22,21 @@ const App = () => {
     ));
   };
 
+  const handleDeleteTask = (id) => {
+    setTasks(tasks.filter((task) => task.id !== id));
+  };
+
   return (
     <div>
       <h1>My To-Do List</h1>
       <AddTask onAdd={handleAddTask} />
       {tasks.map((task) => (
-        <Task key={task.id} task={task} onComplete={handleCompleteTask} />
+        <Task
+          key={task.id}
+          task={task}
+          onComplete={handleCompleteTask}
+          onDelete={handleDeleteTask}
+        />
       ))}
     </div>
   );
