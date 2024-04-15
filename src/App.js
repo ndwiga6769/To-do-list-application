@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
 
-function App() {
+import React, { useState } from 'react';
+import AddTask from './AddTask';
+import Task from './Task';
+
+const App = () => {
+  const [tasks, setTasks] = useState([]);
+
+  const handleAddTask = (text) => {
+    const newTask = {
+      id: Date.now(),
+      text,
+      completed: false,
+    };
+    setTasks([...tasks, newTask]);
+  };
+
+  const handleCompleteTask = (id) => {
+    setTasks(tasks.map((task) =>
+      task.id === id ? { ...task, completed: !task.completed } : task
+    ));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>My To-Do List</h1>
+      <AddTask onAdd={handleAddTask} />
+      {tasks.map((task) => (
+        <Task key={task.id} task={task} onComplete={handleCompleteTask} />
+      ))}
     </div>
   );
-}
+};
 
 export default App;
