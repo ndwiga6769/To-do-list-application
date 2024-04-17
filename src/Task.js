@@ -1,8 +1,6 @@
-// src/Task.js
-
 import React, { useState } from 'react';
 
-const Task = ({ task, onComplete, onDelete }) => {
+const Task = ({ task, onComplete, onUpdate, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(task.text);
 
@@ -10,11 +8,45 @@ const Task = ({ task, onComplete, onDelete }) => {
     setIsEditing(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsEditing(false);
-    // Save changes to the task
-    // For simplicity, we'll just update the task text in this example
-    task.text = editedText;
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/tasks/${task.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: editedText }), // Assuming you only have a text field for the task
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update task');
+      }
+
+      // If the task was updated successfully, call the onUpdate callback
+      onUpdate(task.id, editedText);
+    } catch (error) {
+      console.error('Error updating task:', error);
+      // Handle error, show an alert, etc.
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/tasks/${task.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete task');
+      }
+
+      // If the task was deleted successfully, call the onDelete callback
+      onDelete(task.id);
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      // Handle error, show an alert, etc.
+    }
   };
 
   return (
@@ -37,7 +69,7 @@ const Task = ({ task, onComplete, onDelete }) => {
           {task.text}
         </span>
       )}
-      <button onClick={() => onDelete(task.id)}>Delete</button>
+      <button onClick={handleDelete}>Delete</button>
     </div>
   );
 };
